@@ -135,8 +135,7 @@ class DMNode(object):
 					self.pub_system_response.publish(system_response_msg)
 
 					if system_response_msg.dtype == "bye":
-						self.pub_dialogue_status.publish(String("continue"))
-						#self.pub_dialogue_status.publish(String("finish"))
+						self.pub_dialogue_status.publish(String("finish"))
 					elif system_response_msg.dtype == "hello":
 						self.pub_dialogue_status.publish(String("begin"))
 					else:
