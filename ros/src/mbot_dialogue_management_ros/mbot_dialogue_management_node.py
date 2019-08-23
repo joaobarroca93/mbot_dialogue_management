@@ -12,7 +12,7 @@ from mbot_dialogue_management.mbot_dialogue_management_common import DialogueAct
 from mbot_dialogue_management.mbot_dialogue_management_common import DialogueState as MbotDialogueState
 
 from mbot_dialogue_management.msg import (InformSlot, DialogAct, DialogState)
-from std_msgs.msg import Bool
+from std_msgs.msg import String
 
 
 """
@@ -35,7 +35,7 @@ class DMNode(object):
 		node_name 		= rospy.get_param('~node_name', 'dialogue_management')
 		d_state_topic 	= rospy.get_param('~d_state_topic_name', '/dialogue_state')
 		system_response = rospy.get_param('~system_response_topic_name', '/system_response')
-		system_response_conf = rospy.get_param('~system_response_confirmation_topic_name', '/system_response_confirmation')
+		dialogue_status = rospy.get_param('~dialogue_status_topic_name', '/dialogue_status')
 		task 			= rospy.get_param('~task_topic_name', '/task')
 		ontology_path 	= rospy.get_param('~ontology_path', 'common/src/mbot_dialogue_management/task_ontology.json')
 
@@ -52,7 +52,7 @@ class DMNode(object):
 		rospy.set_param('~node_name', node_name)
 		rospy.set_param('~d_state_topic_name', d_state_topic)
 		rospy.set_param('~system_response_topic_name', system_response)
-		rospy.set_param('~system_response_confirmation_topic_name', system_response_conf)
+		rospy.set_param('~dialogue_status_topic_name', dialogue_status)
 		rospy.set_param('~ontology_full_name', ontology_path)
 		rospy.set_param('~task_topic_name', task)
 
@@ -81,7 +81,7 @@ class DMNode(object):
 
 		self.pub_system_response = rospy.Publisher(system_response, DialogAct, queue_size=1)
 		self.pub_task = rospy.Publisher(task, DialogState, queue_size=1)
-		self.pub_system_response_conf = rospy.Publisher(system_response_conf, Bool, queue_size=1)
+		self.pub_dialogue_status = rospy.Publisher(dialogue_status, String, queue_size=1)
 		
 		rospy.loginfo("%s initialization completed! Ready to accept requests" % node_name)
 
@@ -133,7 +133,14 @@ class DMNode(object):
 					for slot in system_response.slots]
 					
 					self.pub_system_response.publish(system_response_msg)
-					self.pub_system_response_conf.publish(Bool(True))
+
+					if system_response_msg.dtype == "bye":
+						self.pub_dialogue_status.publish(String("continue"))
+						#self.pub_dialogue_status.publish(String("finish"))
+					elif system_response_msg.dtype == "hello":
+						self.pub_dialogue_status.publish(String("begin"))
+					else:
+						self.pub_dialogue_status.publish(String("continue"))
 
 				if task:
 					rospy.loginfo('task: {}'.format(task.as_dict()))
