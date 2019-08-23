@@ -100,19 +100,21 @@ class DialogueManagement(object):
 	@staticmethod
 	def check_task_req(task, requirement, dialogue_state, threshold=0.2):
 
-		rospy.loginfo("Checking required slots for task <{}>".format(task))
+		rospy.logdebug("Checking required slots for task <{}>".format(task))
 
 		missing = 0
 		missing_slots = []
 		relevant_slots = []
+		assertion_error = False
 		for req_slot in requirement["required slots"]:
 
-			rospy.loginfo(req_slot, end="->")
+			rospy.logdebug(req_slot)
 
 			try:
 				# check if the required slot is already in the dialogue state
+				rospy.logdebug([slot.type for slot in dialogue_state.slots])
 				assert req_slot in [slot.type for slot in dialogue_state.slots]
-				rospy.loginfo("CHECK")
+				rospy.logdebug("CHECK")
 
 				max_conf = 0.0
 				relevant_slot = None
@@ -129,12 +131,18 @@ class DialogueManagement(object):
 						})
 
 					elif slot.type == req_slot and slot.confidence < threshold:
-						#rospy.loginfo(slot.confidence, threshold)
-						raise AssertionError()
+						rospy.logdebug(slot.confidence)
+						rospy.logdebug(threshold)
+						assertion_error = True
+						
+				if assertion_error:
+					raise AssertionError()
 
 			except AssertionError:
 				if req_slot not in [slot["type"] for slot in relevant_slots]:
-					rospy.loginfo("MISSING")
+					rospy.logdebug("MISSING")
+					rospy.logdebug(req_slot)
+					rospy.logdebug([slot["type"] for slot in relevant_slots])
 					missing += 1
 					missing_slots.append(req_slot)
 
@@ -237,6 +245,6 @@ if __name__ == '__main__':
 	system_response, _ = dm_obj.run(dialogue_state)
 	
 	if system_response:
-		rospy.loginfo("\nSYSTEM RESPONSE:", end=' ')
+		rospy.loginfo("\nSYSTEM RESPONSE:")
 		rospy.loginfo( json.dumps(system_response.as_system_response(), indent=4) )
 
