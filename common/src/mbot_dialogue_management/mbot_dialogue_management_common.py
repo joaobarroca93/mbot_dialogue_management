@@ -168,7 +168,7 @@ class DialogueManagement(object):
 			task_conf = tasks[-1]["confidence"]
 
 			if task_conf < self.task_threshold:
-				system_response = self.generate_response(dtype="confirm", slots=[Slot(type="intent", value=task)])
+				system_response = self.generate_response(dtype="confirm", slots=[Slot(type="intent", value=tasks[-1]["value"])])
 			else:
 				task = tasks[-1]["value"]
 	
