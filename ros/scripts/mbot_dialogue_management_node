@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import mbot_dialogue_management_ros.mbot_dialogue_management_node
+
+if __name__ == '__main__':
+ mbot_dialogue_management_ros.mbot_dialogue_management_node.main()

@@ -1,0 +1,64 @@
+{
+    "take": [
+        {
+            "required slots": ["object", "source", "destination"],
+            "allowed slots" : ["object", "source", "destination"]
+        },
+        {
+            "required slots": ["object", "source", "person"],
+            "allowed slots" : ["object", "source", "person"]
+        }
+    ],
+    "guide": [
+        {
+            "required slots": ["person", "destination"],
+            "allowed slots" : ["person", "source", "destination"]
+        }
+    ],
+    "follow": [
+        {
+            "required slots": ["person", "destination"],
+            "allowed slots" : ["person", "source", "destination"]
+        }
+    ],
+    "go": [
+        {
+            "required slots": ["destination"],
+            "allowed slots" : ["person", "destination"]
+        }
+    ],
+    "meet": [
+        {
+            "required slots": ["person", "destination"],
+            "allowed slots" : ["person", "destination"]
+        }
+    ],
+    "place": [
+        {
+            "required slots": ["object", "destination"],
+            "allowed slots" : ["object", "source", "destination"]
+        }
+    ],
+    "tell": [
+        {
+            "required slots": ["person"],
+            "allowed slots" : ["person"]
+        }
+    ],
+    "answer": [
+        {
+            "required slots": ["person"],
+            "allowed slots" : ["person"]
+        }
+    ],
+    "find": [
+        {
+            "required slots": ["person"],
+            "allowed slots" : ["person", "destination"]
+        },
+        {
+            "required slots": ["object"],
+            "allowed slots" : ["object", "destination"]
+        }
+    ]
+}
