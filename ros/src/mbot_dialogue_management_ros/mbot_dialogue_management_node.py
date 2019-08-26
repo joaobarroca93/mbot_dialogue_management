@@ -6,10 +6,10 @@ import rospkg
 import json
 import os
 
-from mbot_dialogue_management.mbot_dialogue_management_common import DialogueManagement
-from mbot_dialogue_management.mbot_dialogue_management_common import Slot as MbotSlot
-from mbot_dialogue_management.mbot_dialogue_management_common import DialogueAct as MbotDialogueAct
-from mbot_dialogue_management.mbot_dialogue_management_common import DialogueState as MbotDialogueState
+from mbot_dialogue_management.mbot_dialogue_management_common_v2 import DialogueManagement
+from mbot_dialogue_management.mbot_dialogue_management_common_v2 import Slot as MbotSlot
+from mbot_dialogue_management.mbot_dialogue_management_common_v2 import DialogueAct as MbotDialogueAct
+from mbot_dialogue_management.mbot_dialogue_management_common_v2 import DialogueState as MbotDialogueState
 
 from mbot_dialogue_management.msg import (InformSlot, DialogAct, DialogState)
 from std_msgs.msg import String
@@ -66,8 +66,7 @@ class DMNode(object):
 		logdebug_param({'generic_path': generic_path, 'ontology_full_path': ontology_path})
 
 		self.dm_object = DialogueManagement(
-			ontology_path, task_threshold=0.7,
-			slot_threshold=0.7, request_threshold=0.1
+			ontology_path, task_threshold=0.7, slot_threshold=0.2
 		)
 		rospy.loginfo('dialogue management object created')
 
@@ -151,7 +150,7 @@ class DMNode(object):
 							confidence=slot.confidence,
 							known=True
 						)
-					for slot in task.slots]
+					for slot in task.args]
 
 					self.pub_task.publish(task_msg)
 				

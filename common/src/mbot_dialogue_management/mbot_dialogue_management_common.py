@@ -2,6 +2,8 @@
 
 from __future__ import print_function
 
+from operator import attrgetter
+
 import json
 import copy
 import yaml
@@ -130,6 +132,8 @@ class DialogueManagement(object):
 							"confidence": slot.confidence
 						})
 
+						relevant_slots = sorted(relevant_slots, key=lambda x: x["confidence"])
+
 					elif slot.type == req_slot and slot.confidence < threshold:
 						rospy.logdebug(slot.confidence)
 						rospy.logdebug(threshold)
@@ -146,11 +150,7 @@ class DialogueManagement(object):
 					missing += 1
 					missing_slots.append(req_slot)
 
-		relevant_slots = sorted(
-			relevant_slots,
-			key=lambda x: x["confidence"], reverse=True
-		)
-
+		rospy.logdebug("Exiting check task requirements")
 		return missing_slots, relevant_slots
 
 	def run(self, dialogue_state):
@@ -160,7 +160,8 @@ class DialogueManagement(object):
 		task = None
 		task_conf = 0.0
 		task_obj = None
-		slots_missing = []
+		true_relevant_slots = None
+		required_slots = None
 		relevant_slots = []
 		relevant_slot_confirm = False
 
@@ -188,29 +189,38 @@ class DialogueManagement(object):
 			task_reqs = self.task_ontology[task]
 
 			required_slots = None
+			true_relevant_slots = None
 			min_missing = 100
 			for req in task_reqs:
-				relevant_slot_confirm = False
+				#relevant_slot_confirm = False
 				slots_missing, relevant_slots = self.check_task_req(task, req, dialogue_state, threshold=self.request_threshold)
 
+				rospy.logdebug("IM HERE")
 				for slot in relevant_slots:
+					rospy.logdebug("relevant={}".format(slot))
 					if slot["confidence"] < self.slot_threshold:
+						rospy.logdebug("confirming {}".format(slot))
 						relevant_slot_confirm = True
 						system_response = self.generate_response(dtype="confirm", slots=[Slot(type=slot["type"], value=slot["value"])])
 
+				rospy.logdebug("IM HERE 123")
 				if len(slots_missing) < min_missing:
 					min_missing = len(slots_missing)
 					required_slots = slots_missing
+					true_relevant_slots = relevant_slots
 
+			rospy.logdebug("IM HERE 2132131")
 			if required_slots and not system_response:
-				rospy.loginfo("required_slots={}".format(required_slots))
+				rospy.logdebug("required_slots={}".format(required_slots))
 				slot = required_slots[0]
-				rospy.loginfo("requiring {}".format(slot))
+				rospy.logdebug("requiring {}".format(slot))
 				system_response = self.generate_response(dtype="request", slots=[Slot(type=slot)])
 
-		if not slots_missing and relevant_slots and not relevant_slot_confirm:
-			rospy.loginfo("All requirements fullfield to perform the task <{}>".format(task))
-			rospy.loginfo(relevant_slots)
+
+		rospy.logdebug("NEXT")
+		if not required_slots and true_relevant_slots and not relevant_slot_confirm:
+			rospy.logdebug("All requirements fullfield to perform the task <{}>".format(task))
+			rospy.logdebug(relevant_slots)
 			system_response = self.generate_response(dtype="bye", slots=[])
 
 			task_obj = DialogueState(
@@ -223,6 +233,8 @@ class DialogueManagement(object):
 				for slot in relevant_slots]
 			)
 			task_obj.slots.append(Slot(type="intent", value=task, confidence=task_conf))
+
+		rospy.logdebug(system_response)
 
 		return system_response, task_obj
 
