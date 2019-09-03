@@ -111,13 +111,14 @@ class Task(object):
 
 class DialogueManagement(object):
 
-	def __init__(self, task_ontology_path, task_threshold=0.7,
-				slot_threshold=0.2):
+	def __init__(self, task_ontology_path, slots, task_threshold=0.7,
+				slot_threshold=0.2, scirob=False):
 
 		self.task_threshold = task_threshold
 		self.slot_threshold = slot_threshold
 
-		self.slots = ["object", "person", "destination", "source"]
+		self.slots = slots
+		self.scirob = scirob
 
 		with open(task_ontology_path, "r") as f:
 			self.task_ontology = json.load(f)
@@ -155,6 +156,9 @@ class DialogueManagement(object):
 		# Check if the dialogue state has slots if the dype intent, to indentify the task
 		intent_slots = self.find_slots(dialogue_state, type="intent", threshold=self.slot_threshold)
 
+		if self.scirob:
+			intent_slots = [{"type": "intent", "value": "order", "confidence": 1.0}]
+
 		if not dialogue_state.slots:
 			system_response = self.generate_response(dtype="hello", slots=[])
 		
@@ -176,6 +180,10 @@ class DialogueManagement(object):
 			# fill tasks
 			slots_in_state = [self.find_slots(dialogue_state, type=slot, threshold=self.slot_threshold) for slot in self.slots]
 			if slots_in_state:
+
+				if self.scirob:
+					slots_in_state = [[slot] for slot in slots_in_state[0]]
+				
 				for slots in slots_in_state:
 					if slots:
 						tasks = self.fill_tasks(tasks, slots)

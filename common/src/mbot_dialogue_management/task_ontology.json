@@ -60,5 +60,11 @@
             "required slots": ["object"],
             "allowed slots" : ["object", "destination"]
         }
+    ],
+    "order": [
+        {
+            "required slots": ["object", "object", "object"],
+            "allowed slots" : ["object", "object", "object"]
+        }
     ]
 }

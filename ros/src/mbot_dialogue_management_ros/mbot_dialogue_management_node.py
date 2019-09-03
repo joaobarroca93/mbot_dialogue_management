@@ -56,8 +56,8 @@ class DMNode(object):
 		rospy.set_param('~ontology_full_name', ontology_path)
 		rospy.set_param('~task_topic_name', task)
 
-		rospy.logdebug('=== NODE PRIVATE PARAMETERS ============')
-		logdebug_param(rospy.get_param(node_name))
+		#rospy.logdebug('=== NODE PRIVATE PARAMETERS ============')
+		#logdebug_param(rospy.get_param(node_name))
 
 		rospack = rospkg.RosPack()
 		# get useful paths
@@ -65,8 +65,11 @@ class DMNode(object):
 		ontology_path 	= os.path.join(generic_path, ontology_path)
 		logdebug_param({'generic_path': generic_path, 'ontology_full_path': ontology_path})
 
+		#slots = ["object", "person", "destination", "source"]
+		slots = ["object"]
+		scirob = True
 		self.dm_object = DialogueManagement(
-			ontology_path, task_threshold=0.7, slot_threshold=0.2
+			ontology_path, task_threshold=0.7, slot_threshold=0.2, slots=slots, scirob=scirob
 		)
 		rospy.loginfo('dialogue management object created')
 
