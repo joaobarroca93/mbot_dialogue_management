@@ -1,1 +1,22 @@
-# TODO!!
+#======================================================================================
+# configuration file for DM node
+# all the directories are set from the package main path !!
+#======================================================================================
+#===================
+# NODE PARAMETERS
+#===================
+node_params:
+  name: "dialogue_management"
+  rate: 10.0
+  debug: True
+  task_threshold: 0.1
+  slot_threshold: 0.1
+  d_state_topic: "dialogue_state"
+  d_acts_topic: "dialogue_acts"
+  system_response_topic: "system_response"
+  dialogue_status_topic: "dialogue_status"
+  task_topic: "task"
+  ontology_path: "common/src/mbot_dialogue_management/task_ontology.json"
+  #slots: ["object", "person", "destination", "source"]
+  slots: ["object"]
+  scirob: True

@@ -3,7 +3,8 @@
 
  <!-- small description about your node -->
  
- <node pkg="my_package_name" type="my_node_name" name="my_node_name"
- respawn="false" output="screen" args="$(find mbot_dialogue_management_name)/ros/config/my_arg_file.yaml"/>
+ <node pkg="mbot_dialogue_management" type="mbot_dialogue_management_node" name="dm"
+ respawn="false" output="screen"
+ args="$(find mbot_dialogue_management)/ros/config/config_mbot_dialogue_management.yaml"/>
 
 </launch>
